@@ -15,42 +15,79 @@ const FabricPlaceholder = () => (
   </div>
 );
 
-const StockBadge = ({ status }: { status: Product["stock_status"] }) => {
-  if (status === "out")
+// Days since a YYYY-MM-DD string
+const daysAgo = (date?: string): number | null => {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+  const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+  return diff < 0 ? 0 : diff;
+};
+
+const freshnessLabel = (date?: string) => {
+  const d = daysAgo(date);
+  if (d === null) return null;
+  if (d === 0) return "आज का stock";
+  if (d === 1) return "कल का stock";
+  if (d <= 7) return `${d} दिन पहले`;
+  return null;
+};
+
+const StockBadge = ({ p }: { p: Product }) => {
+  if (p.stock_status === "out")
     return (
       <span className="font-deva pill absolute left-2 top-2 bg-destructive text-destructive-foreground shadow-card">
         खत्म
       </span>
     );
-  if (status === "limited")
+  if (p.stock_status === "limited")
     return (
-      <span className="font-deva pill absolute left-2 top-2 bg-saffron text-primary-foreground shadow-card">
-        Limited
+      <span className="font-deva pill absolute left-2 top-2 bg-saffron text-primary-foreground text-[10px] font-bold shadow-card">
+        🔥 Limited
       </span>
     );
-  return (
-    <span className="pill absolute left-2 top-2 gradient-gold text-[10px] font-bold uppercase text-primary-foreground shadow-card">
-      New
-    </span>
-  );
+  // Featured → "Fast Moving", recent (≤2d) → "नया Lot", else nothing
+  const d = daysAgo(p.date);
+  if (p.is_featured)
+    return (
+      <span className="pill absolute left-2 top-2 bg-maroon text-foreground text-[10px] font-bold uppercase shadow-card">
+        🔥 Fast Moving
+      </span>
+    );
+  if (d !== null && d <= 2)
+    return (
+      <span className="pill absolute left-2 top-2 gradient-gold text-[10px] font-bold uppercase text-primary-foreground shadow-card">
+        नया Lot
+      </span>
+    );
+  return null;
+};
+
+// Build a stable, real-looking product code from id
+const productCode = (p: Product) => {
+  const raw = String(p.id || "");
+  const digits = raw.replace(/\D/g, "");
+  const code = digits ? digits.slice(-6).padStart(6, "0") : raw.toUpperCase().slice(0, 6);
+  return `AT-${code}`;
 };
 
 // Extract numeric price + unit from rate string e.g. "₹350/KG"
 const parseRate = (rate?: string) => {
-  if (!rate) return { price: "", unit: "", num: 0 };
+  if (!rate) return { price: "", unit: "" };
   const m = rate.match(/([₹]?\s*[\d,.]+)\s*\/?\s*(\w+)?/i);
-  if (!m) return { price: rate, unit: "", num: 0 };
+  if (!m) return { price: rate, unit: "" };
   const priceRaw = m[1].replace(/\s/g, "");
-  const num = parseFloat(priceRaw.replace(/[₹,]/g, "")) || 0;
-  return { price: priceRaw.startsWith("₹") ? priceRaw : `₹${priceRaw}`, unit: m[2] ? `/${m[2].toUpperCase()}` : "", num };
+  return {
+    price: priceRaw.startsWith("₹") ? priceRaw : `₹${priceRaw}`,
+    unit: m[2] ? `/${m[2].toUpperCase()}` : "",
+  };
 };
 
 const ProductCard = ({ p }: { p: Product }) => {
   const out = p.stock_status === "out";
-  const { price, unit, num } = parseRate(p.rate);
-  // Show a faux MRP (~18% higher) — purely visual, no business logic change
-  const mrp = num ? Math.round(num * 1.18) : 0;
-  const off = num && mrp ? Math.round(((mrp - num) / mrp) * 100) : 0;
+  const { price, unit } = parseRate(p.rate);
+  const fresh = freshnessLabel(p.date);
+  const code = productCode(p);
 
   return (
     <article
@@ -70,25 +107,20 @@ const ProductCard = ({ p }: { p: Product }) => {
         ) : (
           <FabricPlaceholder />
         )}
-        <StockBadge status={p.stock_status} />
-        {p.is_featured && (
-          <span className="pill absolute right-2 top-2 bg-maroon/90 text-[10px] font-bold uppercase text-foreground shadow-card">
-            ★ Top
-          </span>
-        )}
+        <StockBadge p={p} />
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-3">
-        {/* Variety / category */}
+        {/* Code + Variety */}
         <div className="flex items-center justify-between gap-2">
-          {p.variety ? (
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-primary truncate">
+          <span className="font-mono text-[9.5px] uppercase tracking-wider text-muted-foreground/70">
+            {code}
+          </span>
+          {p.variety && (
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-primary truncate">
               {p.variety}
-            </div>
-          ) : <span />}
-          <div className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/70 shrink-0">
-            {p.category}
-          </div>
+            </span>
+          )}
         </div>
 
         {/* Name */}
@@ -98,14 +130,6 @@ const ProductCard = ({ p }: { p: Product }) => {
         {p.nameEn && p.nameEn !== p.name && (
           <div className="text-[10.5px] text-muted-foreground/80 -mt-0.5 line-clamp-1">{p.nameEn}</div>
         )}
-
-        {/* Trust row — Flipkart-style rating chip + verified */}
-        <div className="mt-0.5 flex items-center gap-1.5">
-          <span className="inline-flex items-center gap-0.5 rounded-sm bg-[hsl(142_70%_35%)] px-1.5 py-0.5 text-[10px] font-bold text-white">
-            4.6 <span className="text-[8px]">★</span>
-          </span>
-          <span className="text-[10px] text-muted-foreground">(2.1k+ orders)</span>
-        </div>
 
         {/* Spec grid */}
         <div className="mt-1 grid grid-cols-2 gap-1 rounded-lg border border-primary/10 bg-background/40 p-1.5">
@@ -126,24 +150,19 @@ const ProductCard = ({ p }: { p: Product }) => {
           </p>
         )}
 
-        {/* Price block — Amazon style */}
+        {/* Price block */}
         <div className="mt-1.5 flex items-baseline gap-1.5 flex-wrap">
           <span className="font-display text-lg font-bold text-primary leading-none">
             {price || p.rate || "—"}
           </span>
           {unit && <span className="text-[10px] font-medium text-muted-foreground">{unit}</span>}
-          {mrp > 0 && (
-            <>
-              <span className="text-[11px] text-muted-foreground line-through">₹{mrp}</span>
-              <span className="text-[10px] font-bold text-[hsl(142_60%_55%)]">{off}% OFF</span>
-            </>
-          )}
+          <span className="text-[9.5px] font-medium text-muted-foreground/80">+ GST</span>
         </div>
 
-        {/* Delivery / MOQ line */}
-        <div className="font-deva flex items-center gap-1 text-[10px] text-muted-foreground/90">
-          <span aria-hidden>🚚</span>
-          <span>All India delivery • Min 1 thaan</span>
+        {/* Bulk + freshness line */}
+        <div className="font-deva flex items-center justify-between gap-2 text-[10px] text-muted-foreground/90">
+          <span>📦 Bulk rate available</span>
+          {fresh && <span className="text-primary/90 font-semibold">• {fresh}</span>}
         </div>
 
         {/* CTA */}
