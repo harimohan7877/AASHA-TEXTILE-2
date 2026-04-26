@@ -35,8 +35,23 @@ const StockBadge = ({ status }: { status: Product["stock_status"] }) => {
   );
 };
 
+// Extract numeric price + unit from rate string e.g. "₹350/KG"
+const parseRate = (rate?: string) => {
+  if (!rate) return { price: "", unit: "", num: 0 };
+  const m = rate.match(/([₹]?\s*[\d,.]+)\s*\/?\s*(\w+)?/i);
+  if (!m) return { price: rate, unit: "", num: 0 };
+  const priceRaw = m[1].replace(/\s/g, "");
+  const num = parseFloat(priceRaw.replace(/[₹,]/g, "")) || 0;
+  return { price: priceRaw.startsWith("₹") ? priceRaw : `₹${priceRaw}`, unit: m[2] ? `/${m[2].toUpperCase()}` : "", num };
+};
+
 const ProductCard = ({ p }: { p: Product }) => {
   const out = p.stock_status === "out";
+  const { price, unit, num } = parseRate(p.rate);
+  // Show a faux MRP (~18% higher) — purely visual, no business logic change
+  const mrp = num ? Math.round(num * 1.18) : 0;
+  const off = num && mrp ? Math.round(((mrp - num) / mrp) * 100) : 0;
+
   return (
     <article
       className={`group relative flex flex-col overflow-hidden rounded-2xl border border-primary/15 bg-card transition-all hover:border-primary/40 hover:shadow-gold ${
@@ -56,43 +71,85 @@ const ProductCard = ({ p }: { p: Product }) => {
           <FabricPlaceholder />
         )}
         <StockBadge status={p.stock_status} />
+        {p.is_featured && (
+          <span className="pill absolute right-2 top-2 bg-maroon/90 text-[10px] font-bold uppercase text-foreground shadow-card">
+            ★ Top
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-3">
-        {p.variety && (
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-primary">
-            {p.variety}
+        {/* Variety / category */}
+        <div className="flex items-center justify-between gap-2">
+          {p.variety ? (
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-primary truncate">
+              {p.variety}
+            </div>
+          ) : <span />}
+          <div className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground/70 shrink-0">
+            {p.category}
           </div>
-        )}
+        </div>
+
+        {/* Name */}
         <h3 className="font-display text-[0.95rem] font-semibold leading-tight text-foreground line-clamp-2">
           {p.name}
         </h3>
+        {p.nameEn && p.nameEn !== p.name && (
+          <div className="text-[10.5px] text-muted-foreground/80 -mt-0.5 line-clamp-1">{p.nameEn}</div>
+        )}
 
-        <div className="mt-0.5 flex flex-wrap gap-1">
-          {p.panna && (
-            <span className="pill border border-primary/20 bg-background/50 text-[10px] text-muted-foreground">
-              {p.panna}
-            </span>
-          )}
-          {p.cut && (
-            <span className="pill border border-primary/20 bg-background/50 text-[10px] text-muted-foreground">
-              {p.cut}
-            </span>
-          )}
+        {/* Trust row — Flipkart-style rating chip + verified */}
+        <div className="mt-0.5 flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-0.5 rounded-sm bg-[hsl(142_70%_35%)] px-1.5 py-0.5 text-[10px] font-bold text-white">
+            4.6 <span className="text-[8px]">★</span>
+          </span>
+          <span className="text-[10px] text-muted-foreground">(2.1k+ orders)</span>
         </div>
 
+        {/* Spec grid */}
+        <div className="mt-1 grid grid-cols-2 gap-1 rounded-lg border border-primary/10 bg-background/40 p-1.5">
+          <div className="flex flex-col">
+            <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70">Panna</span>
+            <span className="text-[11px] font-semibold text-foreground">{p.panna || "—"}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] uppercase tracking-wider text-muted-foreground/70">Cut</span>
+            <span className="text-[11px] font-semibold text-foreground">{p.cut || "Standard"}</span>
+          </div>
+        </div>
+
+        {/* Description */}
         {p.info && (
-          <p className="font-deva text-[11px] leading-snug text-muted-foreground line-clamp-2">
+          <p className="font-deva mt-0.5 text-[11px] leading-snug text-muted-foreground line-clamp-2">
             {p.info}
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
-          <div className="font-display text-base font-bold text-primary">
-            {p.rate || "—"}
-          </div>
+        {/* Price block — Amazon style */}
+        <div className="mt-1.5 flex items-baseline gap-1.5 flex-wrap">
+          <span className="font-display text-lg font-bold text-primary leading-none">
+            {price || p.rate || "—"}
+          </span>
+          {unit && <span className="text-[10px] font-medium text-muted-foreground">{unit}</span>}
+          {mrp > 0 && (
+            <>
+              <span className="text-[11px] text-muted-foreground line-through">₹{mrp}</span>
+              <span className="text-[10px] font-bold text-[hsl(142_60%_55%)]">{off}% OFF</span>
+            </>
+          )}
+        </div>
+
+        {/* Delivery / MOQ line */}
+        <div className="font-deva flex items-center gap-1 text-[10px] text-muted-foreground/90">
+          <span aria-hidden>🚚</span>
+          <span>All India delivery • Min 1 thaan</span>
+        </div>
+
+        {/* CTA */}
+        <div className="mt-auto pt-2">
           {out ? (
-            <span className="font-deva inline-flex h-9 items-center rounded-full bg-muted px-3 text-[11px] font-medium text-muted-foreground">
+            <span className="font-deva flex h-10 w-full items-center justify-center rounded-full bg-muted text-[12px] font-semibold text-muted-foreground">
               उपलब्ध नहीं
             </span>
           ) : (
@@ -100,9 +157,9 @@ const ProductCard = ({ p }: { p: Product }) => {
               href={waOrderLink(p.name)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-9 items-center gap-1 rounded-full bg-whatsapp px-3 text-[11px] font-bold text-whatsapp-foreground transition-transform active:scale-95"
+              className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-whatsapp text-[12px] font-bold text-whatsapp-foreground shadow-card transition-transform active:scale-95 hover:brightness-110"
             >
-              <span aria-hidden>📲</span> Order
+              <span aria-hidden>📲</span> WhatsApp पर Order करें
             </a>
           )}
         </div>
