@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        whatsapp: {
+          DEFAULT: "hsl(var(--whatsapp))",
+          foreground: "hsl(var(--whatsapp-foreground))",
+        },
+        maroon: "hsl(var(--maroon))",
+        saffron: "hsl(var(--saffron))",
+        "primary-glow": "hsl(var(--primary-glow))",
+        "primary-dark": "hsl(var(--primary-dark))",
+      },
+      fontFamily: {
+        display: ["'Playfair Display'", "Georgia", "serif"],
+        sans: ["Inter", "'Noto Sans Devanagari'", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -2,104 +2,136 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* AASHA TEXTILE — Premium Indian Wholesale Catalog Design System
+   All colors HSL. Warm dark base, saffron-gold accent, cream text.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Warm dark base (NOT cold blue-black) */
+    --background: 30 35% 5%;            /* #0F0B07 */
+    --foreground: 44 60% 90%;           /* #F5EDD9 cream */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 24 24% 8%;                  /* #1A1410 */
+    --card-foreground: 44 60% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 24 24% 8%;
+    --popover-foreground: 44 60% 90%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Saffron gold */
+    --primary: 38 74% 47%;              /* #D4981F */
+    --primary-foreground: 30 35% 5%;
+    --primary-glow: 40 86% 60%;         /* #F0B840 */
+    --primary-dark: 36 75% 38%;         /* #A87418 */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 24 24% 12%;
+    --secondary-foreground: 44 60% 90%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 24 18% 14%;
+    --muted-foreground: 44 40% 70%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 38 74% 47%;
+    --accent-foreground: 30 35% 5%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 6 60% 46%;           /* #C0392B */
+    --destructive-foreground: 44 60% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --whatsapp: 142 70% 49%;            /* #25D366 */
+    --whatsapp-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    --maroon: 0 64% 33%;                /* #8B1F1F */
+    --saffron: 27 81% 51%;              /* #E8871A */
 
-    --sidebar-background: 0 0% 98%;
+    --border: 38 74% 47%;               /* gold w/ low alpha via /15 utilities */
+    --input: 24 18% 14%;
+    --ring: 38 74% 47%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --radius: 0.875rem;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(38 74% 55%), hsl(36 75% 38%));
+    --gradient-gold-soft: linear-gradient(135deg, hsl(40 86% 60%), hsl(38 74% 47%));
+    --gradient-bg: radial-gradient(ellipse at 100% 0%, hsl(38 74% 47% / 0.05) 0%, transparent 60%),
+                   radial-gradient(ellipse at 0% 100%, hsl(0 64% 33% / 0.03) 0%, transparent 60%);
+    --texture-weave: repeating-linear-gradient(45deg,
+                       hsl(38 74% 47% / 0.02) 0px,
+                       hsl(38 74% 47% / 0.02) 1px,
+                       transparent 1px, transparent 24px),
+                     repeating-linear-gradient(-45deg,
+                       hsl(38 74% 47% / 0.02) 0px,
+                       hsl(38 74% 47% / 0.02) 1px,
+                       transparent 1px, transparent 24px);
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Shadows */
+    --shadow-gold: 0 4px 24px hsl(38 74% 47% / 0.18);
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-elevated: 0 12px 40px hsl(0 0% 0% / 0.55);
 
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --transition-base: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  /* Force dark — this is a dark-only brand */
+  .dark { color-scheme: dark; }
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+  * { @apply border-border/15; }
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
+  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', 'Noto Sans Devanagari', system-ui, sans-serif;
+    background-image: var(--gradient-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.01em;
   }
 }
+
+@layer components {
+  .font-display { font-family: 'Playfair Display', Georgia, serif; }
+  .font-deva { font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; }
+
+  .texture-weave { background-image: var(--texture-weave); }
+
+  .gradient-gold { background: var(--gradient-gold); }
+  .gradient-gold-soft { background: var(--gradient-gold-soft); }
+
+  .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .shadow-gold { box-shadow: var(--shadow-gold); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .text-balance { text-wrap: balance; }
+}
+
+/* WhatsApp pulse */
+@keyframes wa-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--whatsapp) / 0.55), 0 8px 24px hsl(var(--whatsapp) / 0.4); }
+  50% { box-shadow: 0 0 0 14px hsl(var(--whatsapp) / 0), 0 8px 24px hsl(var(--whatsapp) / 0.4); }
+}
+.animate-wa-pulse { animation: wa-pulse 2.2s ease-in-out infinite; }
+
+/* Preloader bar */
+@keyframes loader-fill {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+.animate-loader-fill { animation: loader-fill 3.4s linear forwards; }
+
+/* Fade in up */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.5s ease-out both; }

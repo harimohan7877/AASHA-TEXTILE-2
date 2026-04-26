@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Aasha Textile</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙</text></svg>">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- ======== LOGIN SCREEN ======== -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <div class="login-icon">🔐</div>
+            <h2>Admin Login</h2>
+            <p>Aasha Textile — Admin Panel</p>
+            <form id="loginForm">
+                <div class="login-input-group">
+                    <input type="password" id="loginPassword" placeholder="Password डालें" required
+                        autocomplete="current-password">
+                    <button type="submit" class="login-btn">🔓 Login</button>
+                </div>
+                <div class="login-error" id="loginError"></div>
+            </form>
+            <div class="login-hint">पहली बार login के बाद Settings में password तुरंत बदलें।</div>
+        </div>
+    </div>
+
+    <!-- ======== ADMIN PANEL ======== -->
+    <div class="admin-panel" id="adminPanel" style="display:none;">
+
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="hdr-inner">
+                <div class="logo">
+                    <div class="logo-icon">⚙</div>
+                    Aasha Textile — Admin
+                </div>
+                <div class="hdr-actions">
+                    <a href="index.html" class="back-btn">← Website देखें</a>
+                    <button class="logout-btn" onclick="logout()">🔒 Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="admin-tabs" id="adminTabs">
+            <button class="tab-btn active" data-tab="products">🛍 Products</button>
+            <button class="tab-btn" data-tab="media">📺 Media</button>
+            <button class="tab-btn" data-tab="settings">⚙ Settings</button>
+        </div>
+
+        <!-- Content -->
+        <div class="admin-content">
+
+            <!-- ---- PRODUCTS TAB ---- -->
+            <div class="tab-panel active" id="tab-products">
+                <h2 class="panel-title">📦 Manage Products</h2>
+                <p class="panel-subtitle">प्रोडक्ट Add, Edit, Delete करें। नाम भरना जरूरी है, बाकी fields optional हैं।
+                </p>
+
+                <!-- Add / Edit Product Form -->
+                <form id="productForm" class="product-form">
+                    <input type="hidden" id="editProductId" value="">
+
+                    <!-- Image Upload -->
+                    <div class="form-group">
+                        <label>Product Image (Optional)</label>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <input type="file" id="productImage" accept="image/*" style="display:none;">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                <div class="upload-icon">📷</div>
+                                <div class="upload-text">Click करें या image drag करें</div>
+                                <div class="upload-hint">JPG, PNG — Max 2MB | या YouTube link से automatic आ जाएगी</div>
+                            </div>
+                            <img id="imagePreview" class="image-preview" alt="Preview">
+                            <button type="button" class="remove-image-btn" id="removeImageBtn" style="display:none"
+                                onclick="removeImage()">✕ Remove</button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">कपड़े का नाम (Hindi) *</label>
+                            <input type="text" id="productName" placeholder="जैसे: कैमरिक कॉटन" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productNameEn">Name (English)</label>
+                            <input type="text" id="productNameEn" placeholder="e.g. Cambric Cotton">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productVariety">वैराइटी</label>
+                            <input type="text" id="productVariety" placeholder="जैसे: प्रिंटेड (40-40/60-60)">
+                        </div>
+                        <div class="form-group">
+                            <label for="productRate">रेट</label>
+                            <input type="text" id="productRate" placeholder="जैसे: ₹430/KG">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCut">कट (Size)</label>
+                            <input type="text" id="productCut" placeholder="जैसे: 4 से 20 मीटर">
+                        </div>
+                        <div class="form-group">
+                            <label for="productPanna">पन्ना (Width)</label>
+                            <input type="text" id="productPanna" placeholder='जैसे: 44"'>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="display:flex; align-items:center; gap: 10px; margin-top:28px;">
+                            <input type="checkbox" id="productOutOfStock" style="width:20px; height:20px;">
+                            <label for="productOutOfStock"
+                                style="margin-bottom:0; color: #ff4444; font-weight: bold;">🚨 Out of Stock (माल
+                                खत्म)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productCategory">कैटेगरी</label>
+                            <select id="productCategory">
+                                <option value="">Select Category</option>
+                                <option value="Cotton">🌿 Cotton</option>
+                                <option value="Silk">✨ Silk</option>
+                                <option value="Rayon">🎨 Rayon</option>
+                                <option value="Satin">💎 Satin</option>
+                                <option value="Readymade">👗 Readymade</option>
+                                <option value="Curtain">🪟 Curtain</option>
+                                <option value="Other">🧶 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDate">तारीख़</label>
+                            <input type="date" id="productDate">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productInfo">जानकारी / विवरण</label>
+                        <textarea id="productInfo" placeholder="जैसे: गर्मी में सबसे ज्यादा बिकने वाला माल।"
+                            rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productYtLink">YouTube Video Link (Optional)</label>
+                        <input type="url" id="productYtLink" placeholder="https://youtu.be/...">
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="submit" class="btn-admin btn-gold" id="productSubmitBtn">
+                            ➕ Product Add करें
+                        </button>
+                        <button type="button" class="btn-admin btn-outline-admin" id="productCancelBtn"
+                            style="display:none" onclick="cancelEdit()">
+                            ✕ Cancel
+                        </button>
+                    </div>
+                </form>
+
+                <div class="separator"></div>
+
+                <!-- Existing Products -->
+                <h3 class="panel-title" style="font-size:1.15rem;">📋 सभी Products</h3>
+                <div class="admin-product-grid" id="adminProductGrid">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- ---- MEDIA TAB ---- -->
+            <div class="tab-panel" id="tab-media">
+                <h2 class="panel-title">📺 Media & Links</h2>
+                <p class="panel-subtitle">YouTube वीडियो और सोशल मीडिया लिंक्स मैनेज करें।</p>
+
+                <!-- YouTube -->
+                <div class="media-section-label">▶️ YouTube Videos</div>
+                <p class="panel-subtitle" style="margin-bottom:12px; font-size:0.8rem;">YouTube video links add करें —
+                    ये website पर दिखेंगे।</p>
+                <div class="media-input-row">
+                    <input type="url" id="youtubeInput" placeholder="YouTube video link paste करें...">
+                    <button class="btn-admin btn-gold btn-sm" onclick="addYouTubeLink()">Add</button>
+                </div>
+                <div class="media-list" id="youtubeList"></div>
+
+                <div class="separator"></div>
+
+                <!-- Instagram -->
+                <div class="media-section-label">📷 Instagram</div>
+                <div class="media-input-row">
+                    <input type="url" id="instagramInput" placeholder="Instagram link paste करें...">
+                    <button class="btn-admin btn-gold btn-sm" onclick="addInstagramLink()">Add</button>
+                </div>
+                <div class="media-list" id="instagramList"></div>
+
+                <div class="separator"></div>
+
+                <!-- Facebook -->
+                <div class="media-section-label">👍 Facebook Page</div>
+                <div class="media-input-row">
+                    <input type="url" id="facebookInput" placeholder="Facebook page link paste करें...">
+                    <button class="btn-admin btn-gold btn-sm" onclick="saveFacebookLink()">Save</button>
+                </div>
+                <div class="media-list" id="facebookDisplay"></div>
+            </div>
+
+            <!-- ---- SETTINGS TAB ---- -->
+            <div class="tab-panel" id="tab-settings">
+                <h2 class="panel-title">⚙ Settings</h2>
+                <p class="panel-subtitle">WhatsApp नंबर और Password बदलें।</p>
+
+                <div class="setting-card">
+                    <h4>📱 WhatsApp Number</h4>
+                    <p>Country code के साथ नंबर डालें (जैसे: 917043830602)</p>
+                    <div class="input-with-btn">
+                        <input type="tel" id="whatsappNumber" placeholder="917043830602">
+                        <button class="btn-admin btn-gold" onclick="saveWhatsApp()">Save</button>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h4>🔑 Admin Password बदलें</h4>
+                    <p>नया password सेट करें</p>
+                    <div class="input-with-btn">
+                        <input type="password" id="newPassword" placeholder="नया password">
+                        <button class="btn-admin btn-gold" onclick="changePassword()">Change</button>
+                    </div>
+                </div>
+
+                <div class="setting-card">
+                    <h4>🗑️ सब डेटा Delete करें</h4>
+                    <p>⚠️ यह सभी products, media links, और settings permanently delete कर देगा।</p>
+                    <button class="btn-admin btn-danger" onclick="resetAllData()">Reset Everything</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="admin.js"></script>
+</body>
+
+</html>

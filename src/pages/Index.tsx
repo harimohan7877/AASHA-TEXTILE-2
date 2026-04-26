@@ -1,16 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Preloader } from "@/components/aasha/Preloader";
+import { Navbar } from "@/components/aasha/Navbar";
+import { Hero } from "@/components/aasha/Hero";
+import { StatsBar } from "@/components/aasha/StatsBar";
+import { Products } from "@/components/aasha/Products";
+import { Testimonials } from "@/components/aasha/Testimonials";
+import { YouTubeSection } from "@/components/aasha/YouTubeSection";
+import { About, Contact } from "@/components/aasha/AboutContact";
+import { Footer } from "@/components/aasha/Footer";
+import { FloatingWhatsApp } from "@/components/aasha/FloatingWhatsApp";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-background">
+      <Preloader />
+      <Navbar />
+      <main>
+        <Hero />
+        <StatsBar />
+        <Products />
+        <Testimonials />
+        <YouTubeSection />
+        <About />
+        <Contact />
+      </main>
+      <Footer />
+      <FloatingWhatsApp />
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
