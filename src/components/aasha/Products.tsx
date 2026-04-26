@@ -220,6 +220,22 @@ export const Products = () => {
           </span>
         </div>
 
+        {/* Trust strip — wholesale credibility */}
+        <div className="-mx-3 mb-4 flex gap-2 overflow-x-auto px-3 pb-1 scrollbar-hide md:mx-0 md:px-0">
+          <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
+            ✓ GST Registered
+          </span>
+          <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
+            ✓ Surat से सीधा mill rate
+          </span>
+          <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
+            ✓ UPI / NEFT / COD
+          </span>
+          <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
+            ✓ All India delivery
+          </span>
+        </div>
+
         {/* Search */}
         <div className="relative mb-3">
           <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
