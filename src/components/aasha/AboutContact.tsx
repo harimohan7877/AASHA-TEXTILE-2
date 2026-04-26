@@ -74,6 +74,26 @@ export const Contact = () => (
           <Phone className="shrink-0 text-primary" size={18} />
           <a href="tel:+917043830602" className="font-mono">+91 70438 30602</a>
         </div>
+
+        {/* Business credentials */}
+        <div className="mt-5 grid gap-2 rounded-xl border border-primary/10 bg-background/40 p-3 text-[12px]">
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-muted-foreground/80">GSTIN</span>
+            <span className="font-mono text-foreground/90">24XXXXXXXXXXX</span>
+          </div>
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-muted-foreground/80 font-deva">कारोबार के घंटे</span>
+            <span className="text-foreground/90">सोम–शनि • 10 AM – 8 PM</span>
+          </div>
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-muted-foreground/80 font-deva">Payment</span>
+            <span className="text-foreground/90 text-right">UPI • NEFT/RTGS<br/>Cash • COD उपलब्ध</span>
+          </div>
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-muted-foreground/80 font-deva">शिपिंग</span>
+            <span className="text-foreground/90">Pan-India • Transport/Courier</span>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-primary/20 bg-card p-6 md:p-8">
