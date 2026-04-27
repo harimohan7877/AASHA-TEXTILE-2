@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, Search } from "lucide-react";
 import { CATEGORIES, useProducts, waOrderLink, type Product } from "@/lib/aashaData";
+
+const INITIAL_VISIBLE = 8;
+const STEP = 8;
 
 const FabricPlaceholder = () => (
   <div
@@ -229,7 +232,7 @@ export const Products = () => {
             ✓ Surat से सीधा mill rate
           </span>
           <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
-            ✓ UPI / NEFT / COD
+            ✓ UPI / NEFT / RTGS
           </span>
           <span className="font-deva pill shrink-0 border border-primary/20 bg-card text-[10.5px] text-foreground/80">
             ✓ All India delivery

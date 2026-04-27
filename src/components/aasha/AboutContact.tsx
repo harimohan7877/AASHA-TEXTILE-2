@@ -40,7 +40,7 @@ export const About = () => (
         <div className="mt-6 flex flex-wrap gap-2">
           <span className="pill border border-primary/20 bg-card text-muted-foreground">✓ GST Registered</span>
           <span className="pill border border-primary/20 bg-card text-muted-foreground">✓ Pan-India Shipping</span>
-          <span className="pill border border-primary/20 bg-card text-muted-foreground">✓ COD Available</span>
+          <span className="pill border border-primary/20 bg-card text-muted-foreground">✓ Transport / Courier</span>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@ export const Contact = () => (
           </div>
           <div className="flex items-start justify-between gap-2">
             <span className="text-muted-foreground/80 font-deva">Payment</span>
-            <span className="text-foreground/90 text-right">UPI • NEFT/RTGS<br/>Cash • COD उपलब्ध</span>
+            <span className="text-foreground/90 text-right">UPI • NEFT/RTGS<br/>Cash • Bank Transfer</span>
           </div>
           <div className="flex items-start justify-between gap-2">
             <span className="text-muted-foreground/80 font-deva">शिपिंग</span>
