@@ -54,14 +54,20 @@ function getDirectVideos(): Video[] {
   });
 }
 
+const INITIAL_VIDEOS = 4;
+
 export const YouTubeSection = () => {
   const [videos, setVideos] = useState<Video[]>(getDirectVideos());
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (videos.length) return;
     fetchChannelVideos().then((v) => v.length && setVideos(v));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const shown = showAll ? videos : videos.slice(0, INITIAL_VIDEOS);
+  const remaining = Math.max(0, videos.length - INITIAL_VIDEOS);
 
   return (
     <section id="youtube" className="border-b border-primary/15 py-10 md:py-16">
@@ -94,39 +100,62 @@ export const YouTubeSection = () => {
             .
           </div>
         ) : (
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-            {videos.map((v) => (
-              <a
-                key={v.id}
-                href={v.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group overflow-hidden rounded-2xl border border-primary/15 bg-card transition-colors hover:border-primary/40"
-              >
-                <div className="relative aspect-video overflow-hidden bg-background">
-                  {v.thumb && (
-                    <img
-                      src={v.thumb}
-                      alt={v.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  )}
-                  <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-[#FF0000] px-1.5 py-0.5 text-[10px] font-bold text-white">
-                    <Play size={9} fill="currentColor" /> YT
-                  </span>
-                  <span className="absolute inset-0 grid place-items-center bg-black/0 transition-colors group-hover:bg-black/30">
-                    <span className="grid h-12 w-12 place-items-center rounded-full bg-[#FF0000]/90 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Play size={18} fill="currentColor" className="text-white" />
+          <>
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+              {shown.map((v) => (
+                <a
+                  key={v.id}
+                  href={v.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group overflow-hidden rounded-2xl border border-primary/15 bg-card transition-colors hover:border-primary/40"
+                >
+                  <div className="relative aspect-video overflow-hidden bg-background">
+                    {v.thumb && (
+                      <img
+                        src={v.thumb}
+                        alt={v.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
+                    <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-md bg-[#FF0000] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      <Play size={9} fill="currentColor" /> YT
                     </span>
-                  </span>
-                </div>
-                <p className="p-3 text-xs font-medium leading-snug text-foreground line-clamp-2 md:text-sm">
-                  {v.title}
-                </p>
-              </a>
-            ))}
-          </div>
+                    <span className="absolute inset-0 grid place-items-center bg-black/0 transition-colors group-hover:bg-black/30">
+                      <span className="grid h-12 w-12 place-items-center rounded-full bg-[#FF0000]/90 opacity-0 transition-opacity group-hover:opacity-100">
+                        <Play size={18} fill="currentColor" className="text-white" />
+                      </span>
+                    </span>
+                  </div>
+                  <p className="p-3 text-xs font-medium leading-snug text-foreground line-clamp-2 md:text-sm">
+                    {v.title}
+                  </p>
+                </a>
+              ))}
+            </div>
+
+            {remaining > 0 && !showAll && (
+              <div className="mt-5 flex justify-center">
+                <button
+                  onClick={() => setShowAll(true)}
+                  className="font-deva inline-flex items-center gap-2 rounded-full border border-primary/30 bg-card px-6 py-2.5 text-xs font-semibold text-foreground transition-colors hover:border-primary hover:bg-primary/5 md:text-sm"
+                >
+                  और {remaining} videos देखें
+                </button>
+              </div>
+            )}
+            {showAll && videos.length > INITIAL_VIDEOS && (
+              <div className="mt-5 flex justify-center">
+                <button
+                  onClick={() => setShowAll(false)}
+                  className="font-deva text-xs font-semibold text-muted-foreground hover:text-primary"
+                >
+                  ↑ कम दिखाएँ
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
