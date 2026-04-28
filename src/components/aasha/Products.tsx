@@ -196,6 +196,7 @@ export const Products = () => {
   const [query, setQuery] = useState("");
   const [cat, setCat] = useState<(typeof CATEGORIES)[number]>("All");
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
+  const [openProduct, setOpenProduct] = useState<Product | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -298,7 +299,7 @@ export const Products = () => {
           <>
             <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-4">
               {shown.map((p) => (
-                <ProductCard key={String(p.id)} p={p} />
+                <ProductCard key={String(p.id)} p={p} onOpen={setOpenProduct} />
               ))}
             </div>
 
