@@ -151,13 +151,42 @@ export function useProducts() {
     let active = true;
     (async () => {
       try {
+        // 1) Try Cloud DB first (admin-managed)
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: cloudRows, error: cloudErr } = await supabase
+          .from("products")
+          .select("*")
+          .order("sort_order", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        if (!cloudErr && cloudRows && cloudRows.length > 0 && active) {
+          const mapped: Product[] = cloudRows.map((r) => ({
+            id: r.id,
+            name: r.name,
+            nameEn: r.name_en || undefined,
+            variety: r.variety || undefined,
+            rate: r.rate || undefined,
+            cut: r.cut || undefined,
+            panna: r.panna || undefined,
+            info: r.info || undefined,
+            image: r.image_url || undefined,
+            category: r.category || inferCategory(r.name, r.variety || ""),
+            stock_status: (r.stock_status as StockStatus) || "available",
+            is_featured: !!r.is_featured,
+            date: r.created_at,
+          }));
+          setProducts(mapped);
+          setLoading(false);
+          return;
+        }
+
+        // 2) Fallback: Google Sheet
         const res = await fetch(SHEET_CSV_URL, { cache: "no-store" });
         if (!res.ok) throw new Error(`Sheet HTTP ${res.status}`);
         const csv = await res.text();
         const rows = parseCsv(csv);
         const sheetItems = rows.map(rowToProduct).filter(Boolean) as Product[];
         if (!active) return;
-        // Priority: Sheet first, then direct fallbacks not duplicated
         const merged = dedupe([...sheetItems, ...getDirectProducts()]);
         setProducts(merged.length ? merged : getDirectProducts());
       } catch (err) {
