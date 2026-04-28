@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { CATEGORIES, useProducts, waOrderLink, type Product } from "@/lib/aashaData";
+import { LazyImage } from "./LazyImage";
+import { ProductLightbox } from "./ProductLightbox";
 
 const INITIAL_VISIBLE = 8;
 const STEP = 8;
@@ -86,7 +88,7 @@ const parseRate = (rate?: string) => {
   };
 };
 
-const ProductCard = ({ p }: { p: Product }) => {
+const ProductCard = ({ p, onOpen }: { p: Product; onOpen: (p: Product) => void }) => {
   const out = p.stock_status === "out";
   const { price, unit } = parseRate(p.rate);
   const fresh = freshnessLabel(p.date);
@@ -98,20 +100,19 @@ const ProductCard = ({ p }: { p: Product }) => {
         out ? "opacity-60" : ""
       }`}
     >
-      <div className="relative aspect-square overflow-hidden bg-background">
+      <button
+        type="button"
+        onClick={() => onOpen(p)}
+        className="relative aspect-square overflow-hidden bg-background text-left"
+        aria-label={`View ${p.name}`}
+      >
         {p.image ? (
-          <img
-            src={p.image}
-            alt={p.name}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-          />
+          <LazyImage src={p.image} alt={p.name} className="h-full w-full" />
         ) : (
           <FabricPlaceholder />
         )}
         <StockBadge p={p} />
-      </div>
+      </button>
 
       <div className="flex flex-1 flex-col gap-1.5 p-3">
         {/* Code + Variety */}
