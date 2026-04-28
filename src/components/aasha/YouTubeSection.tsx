@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Play } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Video {
   id: string;
@@ -8,38 +9,10 @@ interface Video {
   url: string;
 }
 
-// Channel handle as set in direct-updates.js
 const CHANNEL_HANDLE = "aasarextile";
 const CHANNEL_URL = `https://youtube.com/@${CHANNEL_HANDLE}`;
 
-// Lightweight CORS-friendly RSS fetch via rss2json (same approach as original app.js fallback chain)
-async function fetchChannelVideos(): Promise<Video[]> {
-  try {
-    // Try rss2json with @handle channel page
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?user=${CHANNEL_HANDLE}`;
-    const r = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
-    if (r.ok) {
-      const j = await r.json();
-      if (j.items?.length) {
-        return j.items.slice(0, 6).map((it: { guid?: string; link: string; title: string; thumbnail?: string }) => {
-          const idMatch = (it.guid || it.link).match(/[\w-]{11}/);
-          const vid = idMatch ? idMatch[0] : "";
-          return {
-            id: vid,
-            title: it.title,
-            thumb: it.thumbnail || (vid ? `https://i.ytimg.com/vi/${vid}/hqdefault.jpg` : ""),
-            url: it.link,
-          };
-        });
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return [];
-}
-
-// Override videos provided manually in direct-updates.js
+// Manual override from direct-updates.js
 function getDirectVideos(): Video[] {
   const list = (typeof window !== "undefined" && window.DIRECT_SITE_UPDATES?.youtube) || [];
   return list.map((url, i) => {
@@ -57,13 +30,33 @@ function getDirectVideos(): Video[] {
 const INITIAL_VIDEOS = 4;
 
 export const YouTubeSection = () => {
-  const [videos, setVideos] = useState<Video[]>(getDirectVideos());
+  const [videos, setVideos] = useState<Video[]>([]);
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    if (videos.length) return;
-    fetchChannelVideos().then((v) => v.length && setVideos(v));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    (async () => {
+      // 1) Cloud DB first
+      const { data } = await supabase
+        .from("videos")
+        .select("*")
+        .order("sort_order", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (data && data.length > 0) {
+        setVideos(
+          data.map((v) => ({
+            id: v.video_id,
+            title: v.title,
+            thumb: v.thumbnail_url || `https://i.ytimg.com/vi/${v.video_id}/hqdefault.jpg`,
+            url: `https://www.youtube.com/watch?v=${v.video_id}`,
+          }))
+        );
+        return;
+      }
+      // 2) Fallback to direct-updates
+      const direct = getDirectVideos();
+      if (direct.length) setVideos(direct);
+    })();
   }, []);
 
   const shown = showAll ? videos : videos.slice(0, INITIAL_VIDEOS);
