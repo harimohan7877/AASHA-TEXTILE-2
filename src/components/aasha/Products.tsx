@@ -329,6 +329,7 @@ export const Products = () => {
           </>
         )}
       </div>
+      <ProductLightbox product={openProduct} onClose={() => setOpenProduct(null)} />
     </section>
   );
 };
