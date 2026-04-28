@@ -36,15 +36,17 @@ export const ProductLightbox = ({ product, onClose }: Props) => {
       </button>
 
       <div
-        className="relative flex w-full max-w-5xl max-h-[92vh] flex-col overflow-hidden rounded-2xl border border-primary/20 bg-card md:flex-row"
+        className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border border-primary/20 bg-card md:flex md:flex-row md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image side */}
-        <div className="relative flex-1 bg-background min-h-[45vh] md:min-h-[60vh] md:max-w-[60%]">
+        <div className="relative w-full bg-background h-[300px] md:h-auto md:flex-1 md:max-w-[60%] md:min-h-[60vh]">
           {product.image ? (
             <img
               src={product.image}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-contain"
             />
           ) : (
@@ -53,7 +55,7 @@ export const ProductLightbox = ({ product, onClose }: Props) => {
         </div>
 
         {/* Details side */}
-        <div className="flex flex-col gap-3 overflow-y-auto p-5 md:w-[40%] md:p-6">
+        <div className="flex flex-col gap-3 p-5 md:w-[40%] md:overflow-y-auto md:p-6">
           {product.variety && (
             <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">
               {product.variety}
