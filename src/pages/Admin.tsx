@@ -60,7 +60,7 @@ const AdminPage = () => {
   const checkAuth = useCallback(async () => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-      navigate("/auth");
+      navigate("/harimohan/login");
       return;
     }
     setUserId(data.session.user.id);
@@ -75,7 +75,7 @@ const AdminPage = () => {
   useEffect(() => {
     checkAuth();
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) navigate("/auth");
+      if (!session) navigate("/harimohan/login");
     });
     return () => sub.subscription.unsubscribe();
   }, [checkAuth, navigate]);
@@ -194,17 +194,8 @@ const AdminPage = () => {
     return (
       <div className="min-h-screen grid place-items-center p-6">
         <div className="max-w-md rounded-2xl border border-primary/20 bg-card p-6 text-center">
-          <h1 className="font-display text-xl font-bold text-foreground">Admin access नहीं है</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            आपका account <b>{userEmail}</b> है। यह पहला admin बनने के लिए, नीचे दिए गए निर्देश follow करें:
-          </p>
-          <div className="mt-4 rounded-lg bg-background p-3 text-left text-xs text-muted-foreground">
-            <div className="font-semibold text-foreground mb-1">User ID:</div>
-            <code className="break-all text-[10px]">{userId}</code>
-          </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            यह User ID copy करके मुझे (Lovable chat में) भेजो — मैं admin role grant कर दूंगा।
-          </p>
+          <h1 className="font-display text-xl font-bold text-foreground">Access denied</h1>
+          <p className="mt-2 text-sm text-muted-foreground">यह account admin नहीं है।</p>
           <button onClick={logout} className="mt-4 text-xs text-primary hover:underline">
             Logout
           </button>
