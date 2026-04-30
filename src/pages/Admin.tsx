@@ -65,11 +65,22 @@ const AdminPage = () => {
     }
     setUserId(data.session.user.id);
     setUserEmail(data.session.user.email || "");
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.session.user.id);
-    setIsAdmin(!!roles?.some((r) => r.role === "admin"));
+    // Use security definer RPC — bypasses RLS issues
+    const { data: isAdminRpc, error } = await supabase.rpc("has_role", {
+      _user_id: data.session.user.id,
+      _role: "admin",
+    });
+    if (error) {
+      // Fallback: direct table check
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.session.user.id)
+        .eq("role", "admin");
+      setIsAdmin(!!roles && roles.length > 0);
+    } else {
+      setIsAdmin(!!isAdminRpc);
+    }
   }, [navigate]);
 
   useEffect(() => {
