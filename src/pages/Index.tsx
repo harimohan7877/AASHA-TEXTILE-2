@@ -2,7 +2,7 @@ import { Preloader } from "@/components/aasha/Preloader";
 import { Navbar } from "@/components/aasha/Navbar";
 import { Hero } from "@/components/aasha/Hero";
 import { StatsBar } from "@/components/aasha/StatsBar";
-import { Products } from "@/components/aasha/Products";
+import { CategoryShowcase } from "@/components/aasha/CategoryShowcase";
 import { Testimonials } from "@/components/aasha/Testimonials";
 import { YouTubeSection } from "@/components/aasha/YouTubeSection";
 import { About, Contact } from "@/components/aasha/AboutContact";
@@ -17,7 +17,7 @@ const Index = () => {
       <main>
         <Hero />
         <StatsBar />
-        <Products />
+        <CategoryShowcase />
         <Testimonials />
         <YouTubeSection />
         <About />
